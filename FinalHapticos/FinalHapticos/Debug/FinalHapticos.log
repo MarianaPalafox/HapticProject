@@ -1,0 +1,3 @@
+﻿  pch.cpp
+  FinalHapticos.cpp
+chai3d-debug.lib(CExtras.obj) : fatal error LNK1112: module machine type 'x64' conflicts with target machine type 'x86'
