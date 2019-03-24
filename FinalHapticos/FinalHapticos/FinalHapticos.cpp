@@ -46,7 +46,7 @@ cGELWorld* defWorld;
 cGELMesh* defObject;
 
 // Nodos dinámicos
-cGELSkeletonNode* nodes[10][10];
+cGELSkeletonNode* nodes[15][35][3];
 
 // Modelo del objeto
 cShapeSphere* device;
@@ -129,14 +129,15 @@ int main(int argc, char* argv[])
 
 	// Elección del color de fondo
 	// el color se selecciona usando componentes (R,G,B) 
-	world->setBackgroundColor(0.0, 0.0, 0.0);
+	//world->setBackgroundColor(148.0 / 255.0, 48.0 / 255.0, 7.0 / 255.0);
+	world->setBackgroundColor(0, 0, 0);
 
 	// Creacion y configuración de la cámara
 	camera = new cCamera(world);
 	world->addChild(camera);
 
 	// posicion y orientación de la camara
-	camera->set(cVector3d(2.0, 0.0, 1.5),    // position (eye)
+	camera->set(cVector3d(-3.5, 0.0, 1.5),    // position (eye)
 		cVector3d(0.0, 0.0, 0.0),    // lookat position (target)
 		cVector3d(0.0, 0.0, 1.0));   // dirección del vector "up" 
 
@@ -186,7 +187,6 @@ int main(int argc, char* argv[])
 
 	// Esfera que representa al cursor háptico
 	deviceRadius = 0.1;   // radio del cursor háptico
-//  deviceRadius = 0.03;
 	device = new cShapeSphere(deviceRadius);
 	world->addChild(device);
 	device->m_material.m_ambient.set(0.4, 0.4, 0.4, 0.7);
@@ -203,7 +203,7 @@ int main(int argc, char* argv[])
 		 // Crear el mundo que soporta ambiente deformable
 	defWorld = new cGELWorld();
 	world->addChild(defWorld);
-	world->setPos(-1.5, 0.0, -0.1);
+	world->setPos(1.5, 0.0, 0.1);
 	world->rotate(cVector3d(0, 1, 0), cDegToRad(30));
 
 	// Ajustar estos valores cuidadosamente
@@ -215,7 +215,7 @@ int main(int argc, char* argv[])
 	defObject = new cGELMesh(world);
 	defWorld->m_gelMeshes.push_front(defObject);
 	bool fileload;
-	fileload = defObject->loadFromFile("../imagenes/box.3ds");
+	fileload = defObject->loadFromFile("../imagenes/Fridhem_3ds.3DS");
 	if (!fileload)
 	{
 		printf("Error al cargar el modelo 3d.\n");
@@ -229,24 +229,11 @@ int main(int argc, char* argv[])
 	mat.m_diffuse.set(0.6, 0.6, 0.6);
 	mat.m_ambient.set(1.0, 1.0, 1.0);
 	mat.setShininess(100);
+
 	defObject->setMaterial(mat, true);
-
-	// textura del objeto
-	cTexture2D* texture = new cTexture2D();
-	fileload = texture->loadFromFile("../imagenes/shadow.bmp");
-	if (!fileload)
-	{
-		printf("Error al cargar el archivo de textura.\n");
-		close();
-		return (-1);
-	}
-
-	texture->setEnvironmentMode(GL_DECAL);
-	texture->setSphericalMappingEnabled(true);
-
-	defObject->setTexture(texture, true);
-	defObject->setTransparencyLevel(0.7, true);
+	defObject->setTransparencyLevel(.6, true);
 	defObject->setUseTexture(true, true);
+	defObject->scale(0.28);
 
 
 	// Construir los vértices dinámicos
@@ -256,34 +243,45 @@ int main(int argc, char* argv[])
 
 	// Valores default de los nodos
 	//cGELSkeletonNode::default_radius        = 0.03;
-	cGELSkeletonNode::default_radius = 0.05;
+	cGELSkeletonNode::default_radius = 0.02;
 	cGELSkeletonNode::default_kDampingPos = 0.4;
 	cGELSkeletonNode::default_kDampingRot = 0.1;
-	cGELSkeletonNode::default_mass = 0.01;  // [kg]
+	cGELSkeletonNode::default_mass = 0.2;  // [kg]
 	cGELSkeletonNode::default_showFrame = true;
-	cGELSkeletonNode::default_color.set(1.0, 0.6, 0.6);
+	cGELSkeletonNode::default_color.set(1.0, 0.0, 0.0);
 	cGELSkeletonNode::default_useGravity = true;
 	// cGELSkeletonNode::default_useGravity    = false;
-	cGELSkeletonNode::default_gravity.set(0.00, 0.00, -1.00);
+	cGELSkeletonNode::default_gravity.set(0.00, 0.00, -0.20);
 	radius = cGELSkeletonNode::default_radius;
 
 	// Arreglo de nodos 
-	for (int y = 0; y < 10; y++)
+	for (int y = 0; y < 35; y++)
 	{
-		for (int x = 0; x < 10; x++)
+		for (int x = 0; x < 15; x++)
 		{
-			cGELSkeletonNode* newNode = new cGELSkeletonNode();
-			nodes[x][y] = newNode;
-			defObject->m_nodes.push_front(newNode);
-			newNode->m_pos.set((-0.45 + 0.1*(double)x), (-0.43 + 0.1*(double)y), 0.0);
+			for (int z = 0; z < 3; z++) {
+				cGELSkeletonNode* newNode = new cGELSkeletonNode();
+				nodes[x][y][z] = newNode;
+				defObject->m_nodes.push_front(newNode);
+				newNode->m_pos.set((0 + 0.05*(double)x), (0 + 0.05*(double)y), (0.35 + 0.05*(double)z));
+			}
 		}
 	}
 
 	// Fijar los nodos de las cuatro esquinas
-	nodes[0][0]->m_fixed = true;
-	nodes[0][9]->m_fixed = true;
-	nodes[9][0]->m_fixed = true;
-	nodes[9][9]->m_fixed = true;
+	nodes[0][0][0]->m_fixed = true;
+	nodes[0][34][0]->m_fixed = true;
+	nodes[14][0][0]->m_fixed = true;
+	nodes[14][34][0]->m_fixed = true;
+	nodes[0][0][1]->m_fixed = true;
+	nodes[0][34][1]->m_fixed = true;
+	nodes[14][0][1]->m_fixed = true;
+	nodes[14][34][1]->m_fixed = true;
+	nodes[0][0][2]->m_fixed = true;
+	nodes[0][34][2]->m_fixed = true;
+	nodes[14][0][2]->m_fixed = true;
+	nodes[14][34][2]->m_fixed = true;
+	
 
 	// Valores default para los enlaces 
 	cGELSkeletonLink::default_kSpringElongation = 100.0; // [N/m]
@@ -292,18 +290,27 @@ int main(int argc, char* argv[])
 	cGELSkeletonLink::default_color.set(0.2, 0.2, 1.0);
 
 	// crear los enlaces entre los nodos 
-	for (int y = 0; y < 9; y++)
-	{
-		for (int x = 0; x < 9; x++)
-		{
-			cGELSkeletonLink* newLinkX0 = new cGELSkeletonLink(nodes[x + 0][y + 0], nodes[x + 1][y + 0]);
-			cGELSkeletonLink* newLinkX1 = new cGELSkeletonLink(nodes[x + 0][y + 1], nodes[x + 1][y + 1]);
-			cGELSkeletonLink* newLinkY0 = new cGELSkeletonLink(nodes[x + 0][y + 0], nodes[x + 0][y + 1]);
-			cGELSkeletonLink* newLinkY1 = new cGELSkeletonLink(nodes[x + 1][y + 0], nodes[x + 1][y + 1]);
-			defObject->m_links.push_front(newLinkX0);
-			defObject->m_links.push_front(newLinkX1);
-			defObject->m_links.push_front(newLinkY0);
-			defObject->m_links.push_front(newLinkY1);
+	for (int y = 0; y < 34; y++) {
+		for (int x = 0; x < 14; x++) {
+			for (int z = 0; z < 2; z++) {
+				cGELSkeletonLink* newLinkX0 = new cGELSkeletonLink(nodes[x + 0][y + 0][z], nodes[x + 1][y + 0][z]);
+				cGELSkeletonLink* newLinkX1 = new cGELSkeletonLink(nodes[x + 0][y + 1][z], nodes[x + 1][y + 1][z]);
+				cGELSkeletonLink* newLinkY0 = new cGELSkeletonLink(nodes[x + 0][y + 0][z], nodes[x + 0][y + 1][z]);
+				cGELSkeletonLink* newLinkY1 = new cGELSkeletonLink(nodes[x + 1][y + 0][z], nodes[x + 1][y + 1][z]);
+				defObject->m_links.push_front(newLinkX0);
+				defObject->m_links.push_front(newLinkX1);
+				defObject->m_links.push_front(newLinkY0);
+				defObject->m_links.push_front(newLinkY1);
+			}
+		}
+	}
+
+	for (int y = 0; y < 34; y++) {
+		for (int x = 0; x < 14; x++) {
+			cGELSkeletonLink * link0and1 = new cGELSkeletonLink(nodes[x][y][0], nodes[x][y][1]);
+			cGELSkeletonLink * link1and2 = new cGELSkeletonLink(nodes[x][y][0], nodes[x][y][1]);
+			defObject->m_links.push_front(link0and1);
+			defObject->m_links.push_front(link1and2);
 		}
 	}
 
@@ -311,7 +318,7 @@ int main(int argc, char* argv[])
 	defObject->connectVerticesToSkeleton(false);
 
 	// Mostrar ocultar el esqueleto
-	defObject->m_showSkeletonModel = false;
+	defObject->m_showSkeletonModel = true;
 
 	// definir la constante de integración
 	defWorld->m_integrationTime = 0.005;
@@ -505,15 +512,15 @@ void updateHaptics(void)
 		force.zero();
 
 		// calcula las fuerzas de reacción del objeto deformable
-		for (int y = 0; y < 10; y++)
-		{
-			for (int x = 0; x < 10; x++)
-			{
-				cVector3d nodePos = nodes[x][y]->m_pos;
-				cVector3d f = computeForce(pos, deviceRadius, nodePos, radius, stiffness);
-				cVector3d tmpfrc = cNegate(f);
-				nodes[x][y]->setExternalForce(tmpfrc);
-				force.add(f);
+		for (int y = 0; y < 34; y++) {
+			for (int x = 0; x < 14; x++) {
+				for (int z = 0; z < 2; z++) {
+					cVector3d nodePos = nodes[x][y][z]->m_pos;
+					cVector3d f = computeForce(pos, deviceRadius, nodePos, radius, stiffness);
+					cVector3d tmpfrc = cNegate(f);
+					nodes[x][y][z]->setExternalForce(tmpfrc);
+					force.add(f);
+				}
 			}
 		}
 
