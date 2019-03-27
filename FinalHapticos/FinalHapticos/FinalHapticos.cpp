@@ -115,13 +115,10 @@ int main(int argc, char* argv[])
 	//-----------------------------------------------------------------------
 
 	printf("\n");
-	printf("-----------------------------------\n");
-	printf("Programa ejemplo para demostrar uso de CHAID 3D\n");
-	printf("Esfera con propiedades hapticas \n");
-	printf("[1] - Muestra GEL Skeleton\n");
-	printf("[2] - Oculta  GEL Skeleton\n");
-	printf("[x] o [ESC]- termina la applicacion \n");
-	printf("-----------------------------------\n");
+	printf("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°\n");
+	printf("Proyecto final de dispositivos hapticos\n");
+	printf("Sillon deformable \n");
+	printf("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°\n");
 	printf("\n\n");
 
 	// Creación y configutación del mindo virtual
@@ -130,7 +127,7 @@ int main(int argc, char* argv[])
 	// Elección del color de fondo
 	// el color se selecciona usando componentes (R,G,B) 
 	//world->setBackgroundColor(148.0 / 255.0, 48.0 / 255.0, 7.0 / 255.0);
-	world->setBackgroundColor(0, 0, 0);
+	world->setBackgroundColor(1, 1, 1);
 
 	// Creacion y configuración de la cámara
 	camera = new cCamera(world);
@@ -235,6 +232,22 @@ int main(int argc, char* argv[])
 	defObject->setUseTexture(true, true);
 	defObject->scale(0.28);
 
+	cTexture2D* texture = new cTexture2D();
+	fileload = texture->loadFromFile("../imagenes/red_sofa.bmp");
+	if (!fileload)
+	{
+		printf("Error al cargar el archivo de textura.\n");
+		close();
+		return (-1);
+	}
+
+	texture->setEnvironmentMode(GL_DECAL);
+	texture->setSphericalMappingEnabled(true);
+
+	defObject->setTexture(texture, true);
+	defObject->setTransparencyLevel(0.7, true);
+	defObject->setUseTexture(true, true);
+
 
 	// Construir los vértices dinámicos
 	defObject->buildVertices();
@@ -249,7 +262,7 @@ int main(int argc, char* argv[])
 	cGELSkeletonNode::default_mass = 0.2;  // [kg]
 	cGELSkeletonNode::default_showFrame = true;
 	cGELSkeletonNode::default_color.set(1.0, 0.0, 0.0);
-	cGELSkeletonNode::default_useGravity = true;
+	cGELSkeletonNode::default_useGravity = false;
 	// cGELSkeletonNode::default_useGravity    = false;
 	cGELSkeletonNode::default_gravity.set(0.00, 0.00, -0.20);
 	radius = cGELSkeletonNode::default_radius;
