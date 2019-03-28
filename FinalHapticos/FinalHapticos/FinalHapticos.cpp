@@ -25,7 +25,7 @@ cGenericHapticDevice* hapticDevice;
 
 cGELWorld* defWorld;
 cGELMesh* defObject;
-cGELSkeletonNode* nodes[15][35][3];
+cGELSkeletonNode* nodes[3][7];
 
 cShapeSphere* device;
 double deviceRadius;
@@ -70,30 +70,30 @@ int main(int argc, char* argv[])
 	printf("\n");
 	printf("같같같같같같같같같같같같같같같같같같같같\n");
 	printf("Proyecto final de dispositivos hapticos\n");
-	printf("Sillon deformable \n");
+	printf("Cama deformable \n");
 	printf("같같같같같같같같같같같같같같같같같같같같\n");
 	printf("\n\n");
 
 	world = new cWorld();
 
-	world->setBackgroundColor(1, 1, 1);
+	world->setBackgroundColor(0, 0, 0);
 
 	camera = new cCamera(world);
 	world->addChild(camera);
 
-	camera->set(cVector3d(-3.5, 0.0, 1.5),    
-		cVector3d(0.0, 0.0, 0.0),    
-		cVector3d(0.0, 0.0, 1.0));   
+	camera->set(cVector3d(7.5, 0.0, 1.5),
+		cVector3d(0.0, 0.0, 0.0),
+		cVector3d(0.0, 0.0, 1.0));
 
-	camera->setClippingPlanes(0.01, 10.0);
+	camera->setClippingPlanes(0.01, 20.0);
 
 	camera->enableMultipassTransparency(true);
 
 	light = new cLight(world);
-	camera->addChild(light);                   
-	light->setEnabled(true);                   
-	light->setPos(cVector3d(2.0, 0.5, 1.0));  
-	light->setDir(cVector3d(-2.0, 0.5, 1.0));  
+	camera->addChild(light);
+	light->setEnabled(true);
+	light->setPos(cVector3d(2.0, 0.5, 1.0));
+	light->setDir(cVector3d(-2.0, 0.5, 1.0));
 
 	handler = new cHapticDeviceHandler();
 
@@ -111,13 +111,13 @@ int main(int argc, char* argv[])
 		info = hapticDevice->getSpecifications();
 	}
 
-	cursorWorkspaceRadius = 0.5;
+	cursorWorkspaceRadius = 5.5;
 	workspaceScaleFactor = cursorWorkspaceRadius / info.m_workspaceRadius;
 
 	deviceForceScale = 0.1 * info.m_maxForce;
 
-	
-	deviceRadius = 0.1;   
+
+	deviceRadius = 0.07;
 	device = new cShapeSphere(deviceRadius);
 	world->addChild(device);
 	device->m_material.m_ambient.set(0.4, 0.4, 0.4, 0.7);
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
 
 	defWorld = new cGELWorld();
 	world->addChild(defWorld);
-	world->setPos(1.5, 0.0, 0.1);
+	world->setPos(0.0, 0.0, 0.1);
 	world->rotate(cVector3d(0, 1, 0), cDegToRad(30));
 
 	cGELSkeletonNode::default_kDampingPos = 0.1;
@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
 	defObject = new cGELMesh(world);
 	defWorld->m_gelMeshes.push_front(defObject);
 	bool fileload;
-	fileload = defObject->loadFromFile("../imagenes/Fridhem_3ds.3DS");
+	fileload = defObject->loadFromFile("../imagenes/cama.3ds");
 	if (!fileload)
 	{
 		printf("Error al cargar el modelo 3d.\n");
@@ -153,11 +153,11 @@ int main(int argc, char* argv[])
 	mat.setShininess(100);
 
 	defObject->setMaterial(mat, true);
-	defObject->setTransparencyLevel(0, true);
+	defObject->setTransparencyLevel(0.9, true);
 	defObject->setUseTexture(true, true);
-	defObject->scale(0.28);
+	defObject->setPos(0, 0, 0);
 
-	cTexture2D* texture = new cTexture2D();
+	/*cTexture2D* texture = new cTexture2D();
 	fileload = texture->loadFromFile("../imagenes/red_sofa.bmp");
 	if (!fileload)
 	{
@@ -170,81 +170,60 @@ int main(int argc, char* argv[])
 	texture->setSphericalMappingEnabled(true);
 
 	defObject->setTexture(texture, true);
-	defObject->setTransparencyLevel(0.7, true);
-	defObject->setUseTexture(true, true);
+	defObject->setTransparencyLevel(0.9, true);
+	defObject->setUseTexture(true, true);*/
 
 
 	defObject->buildVertices();
 	defObject->m_useSkeletonModel = true;
 
 
-	cGELSkeletonNode::default_radius = 0.03;
+	cGELSkeletonNode::default_radius = 0.19;
 	cGELSkeletonNode::default_kDampingPos = 0.4;
 	cGELSkeletonNode::default_kDampingRot = 0.1;
-	cGELSkeletonNode::default_mass = 0.2;  // [kg]
+	cGELSkeletonNode::default_mass = 0.5;  // [kg]
 	cGELSkeletonNode::default_showFrame = true;
-	cGELSkeletonNode::default_color.set(1.0, 0.0, 0.0);
+	cGELSkeletonNode::default_color.set(0.0, 1.0, 0.0);
 	cGELSkeletonNode::default_useGravity = false;
-	cGELSkeletonNode::default_gravity.set(0.00, 0.00, -0.20);
+	cGELSkeletonNode::default_gravity.set(0.00, 0.00, -1.00);
 	radius = cGELSkeletonNode::default_radius;
- 
-	for (int y = 0; y < 35; y++)
+
+	for (int y = 0; y < 7; y++)
 	{
-		for (int x = 0; x < 15; x++)
+		for (int x = 0; x < 3; x++)
 		{
-			for (int z = 0; z < 3; z++) {
-				cGELSkeletonNode* newNode = new cGELSkeletonNode();
-				nodes[x][y][z] = newNode;
-				defObject->m_nodes.push_front(newNode);
-				newNode->m_pos.set((0 + 0.05*(double)x), (0 + 0.05*(double)y), (0.35 + 0.05*(double)z));
-			}
+			cGELSkeletonNode* newNode = new cGELSkeletonNode();
+			nodes[x][y] = newNode;
+			defObject->m_nodes.push_front(newNode);
+			newNode->m_pos.set((-0.3 + 0.5*(double)x), (-1.6 + 0.28*(double)y), 0.35);
 		}
 	}
 
-	nodes[0][0][0]->m_fixed = true;
-	nodes[0][34][0]->m_fixed = true;
-	nodes[14][0][0]->m_fixed = true;
-	nodes[14][34][0]->m_fixed = true;
-	nodes[0][0][1]->m_fixed = true;
-	nodes[0][34][1]->m_fixed = true;
-	nodes[14][0][1]->m_fixed = true;
-	nodes[14][34][1]->m_fixed = true;
-	nodes[0][0][2]->m_fixed = true;
-	nodes[0][34][2]->m_fixed = true;
-	nodes[14][0][2]->m_fixed = true;
-	nodes[14][34][2]->m_fixed = true;
-	
+	nodes[0][0]->m_fixed = true;
+	nodes[0][6]->m_fixed = true;
+	nodes[2][0]->m_fixed = true;
+	nodes[2][6]->m_fixed = true;
 
-	cGELSkeletonLink::default_kSpringElongation = 100.0; 
-	cGELSkeletonLink::default_kSpringFlexion = 0.5;   
-	cGELSkeletonLink::default_kSpringTorsion = 0.1;   
+
+	cGELSkeletonLink::default_kSpringElongation = 50.0;
+	cGELSkeletonLink::default_kSpringFlexion = 0.2;
+	cGELSkeletonLink::default_kSpringTorsion = 0.1;
 	cGELSkeletonLink::default_color.set(0.2, 0.2, 1.0);
 
-	for (int y = 0; y < 34; y++) {
-		for (int x = 0; x < 14; x++) {
-			for (int z = 0; z < 2; z++) {
-				cGELSkeletonLink* newLinkX0 = new cGELSkeletonLink(nodes[x + 0][y + 0][z], nodes[x + 1][y + 0][z]);
-				cGELSkeletonLink* newLinkX1 = new cGELSkeletonLink(nodes[x + 0][y + 1][z], nodes[x + 1][y + 1][z]);
-				cGELSkeletonLink* newLinkY0 = new cGELSkeletonLink(nodes[x + 0][y + 0][z], nodes[x + 0][y + 1][z]);
-				cGELSkeletonLink* newLinkY1 = new cGELSkeletonLink(nodes[x + 1][y + 0][z], nodes[x + 1][y + 1][z]);
-				defObject->m_links.push_front(newLinkX0);
-				defObject->m_links.push_front(newLinkX1);
-				defObject->m_links.push_front(newLinkY0);
-				defObject->m_links.push_front(newLinkY1);
-			}
+	for (int y = 0; y < 6; y++) {
+		for (int x = 0; x < 2; x++) {
+			cGELSkeletonLink* newLinkX0 = new cGELSkeletonLink(nodes[x + 0][y + 0], nodes[x + 1][y + 0]);
+			cGELSkeletonLink* newLinkX1 = new cGELSkeletonLink(nodes[x + 0][y + 1], nodes[x + 1][y + 1]);
+			cGELSkeletonLink* newLinkY0 = new cGELSkeletonLink(nodes[x + 0][y + 0], nodes[x + 0][y + 1]);
+			cGELSkeletonLink* newLinkY1 = new cGELSkeletonLink(nodes[x + 1][y + 0], nodes[x + 1][y + 1]);
+			defObject->m_links.push_front(newLinkX0);
+			defObject->m_links.push_front(newLinkX1);
+			defObject->m_links.push_front(newLinkY0);
+			defObject->m_links.push_front(newLinkY1);
 		}
 	}
 
-	for (int y = 0; y < 34; y++) {
-		for (int x = 0; x < 14; x++) {
-			cGELSkeletonLink * link0and1 = new cGELSkeletonLink(nodes[x][y][0], nodes[x][y][1]);
-			cGELSkeletonLink * link1and2 = new cGELSkeletonLink(nodes[x][y][0], nodes[x][y][1]);
-			defObject->m_links.push_front(link0and1);
-			defObject->m_links.push_front(link1and2);
-		}
-	}
-
-	defObject->connectVerticesToSkeleton(false);
+	defObject->connectVerticesToSkeleton(true);
 
 	defObject->m_showSkeletonModel = true;
 
@@ -265,7 +244,7 @@ int main(int argc, char* argv[])
 	glutDisplayFunc(updateGraphics);
 	glutKeyboardFunc(keySelect);
 	glutReshapeFunc(resizeWindow);
-	glutSetWindowTitle("Proyecto Final");    
+	glutSetWindowTitle("Proyecto Final");
 
 	glutCreateMenu(menuSelect);
 	glutAddMenuEntry("Pantalla completa", OPTION_FULLSCREEN);
@@ -375,15 +354,13 @@ void updateHaptics(void)
 		cVector3d force;
 		force.zero();
 
-		for (int y = 0; y < 34; y++) {
-			for (int x = 0; x < 14; x++) {
-				for (int z = 0; z < 2; z++) {
-					cVector3d nodePos = nodes[x][y][z]->m_pos;
-					cVector3d f = computeForce(pos, deviceRadius, nodePos, radius, stiffness);
-					cVector3d tmpfrc = cNegate(f);
-					nodes[x][y][z]->setExternalForce(tmpfrc);
-					force.add(f);
-				}
+		for (int y = 0; y < 6; y++) {
+			for (int x = 0; x < 2; x++) {
+				cVector3d nodePos = nodes[x][y]->m_pos;
+				cVector3d f = computeForce(pos, deviceRadius, nodePos, radius, stiffness);
+				cVector3d tmpfrc = cNegate(f);
+				nodes[x][y]->setExternalForce(tmpfrc);
+				force.add(f);
 			}
 		}
 
